@@ -1,13 +1,10 @@
 package com.op.chatopback.model;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "rentals")
@@ -23,11 +20,17 @@ public class Rental {
     private String pictureUrl;
     @Column(length = 2000)
     private String description;
-    @Column(name = "owner_id", nullable = false)
-    private Integer ownerId;
 
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 
 
