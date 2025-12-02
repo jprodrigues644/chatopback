@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,6 +21,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "users")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 
 public class User {
 
@@ -32,7 +34,8 @@ public class User {
 
     
     private String name;
-    
+
+    @Column(nullable = false)
     private String password;
 
     @CreationTimestamp
@@ -42,4 +45,5 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
- }
+
+}

@@ -13,7 +13,8 @@ public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-   
+
+    @Column()
     private Double surface;
     private Double price;
     @Column(length = 255)

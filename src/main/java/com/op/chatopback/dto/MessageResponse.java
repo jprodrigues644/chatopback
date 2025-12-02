@@ -3,6 +3,7 @@ package com.op.chatopback.dto;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 public class MessageResponse {
@@ -10,5 +11,6 @@ public class MessageResponse {
     private Integer userId;
     private Integer rentalId;
     private String message;
-    private Timestamp createdAt;
+    private String confirmationMessage;
+    private LocalDateTime createdAt;
 }

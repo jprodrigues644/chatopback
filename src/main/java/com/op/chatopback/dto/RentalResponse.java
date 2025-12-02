@@ -11,7 +11,7 @@ public class RentalResponse {
     private String picture;
     private String description;
     private Integer ownerId ;
-
+    private String confirmationMessage;
     private LocalDateTime createdAt;
 
 }
