@@ -1,16 +1,20 @@
 package com.op.chatopback.service;
 
 
-import com.op.chatopback.dto.AuthRequest;
-import com.op.chatopback.dto.AuthResponse;
-import com.op.chatopback.dto.RegisterRequest;
-import com.op.chatopback.dto.UserDto;
+import com.op.chatopback.dto.*;
 import com.op.chatopback.model.User;
 import com.op.chatopback.repository.UserRepository;
+import com.op.chatopback.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +22,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
 
     //User Sign UP
-    private UserDto registerUser (RegisterRequest registerRequest) {
+    public RegisterResponse registerUser (RegisterRequest registerRequest) {
          if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
              throw new RuntimeException("User Already Exist");
          }
@@ -33,17 +39,36 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        UserDto userDto = new UserDto();
-        userDto.setId(savedUser.getId());
-        userDto.setName(savedUser.getName());
-        userDto.setEmail(savedUser.getEmail());
+        user.setCreatedAt(LocalDateTime.now());
 
-        return userDto;
+        User saved = userRepository.save(user);
+
+        RegisterResponse response = new RegisterResponse();
+        response.setId(saved.getId());
+        response.setName(saved.getName());
+        response.setEmail(saved.getEmail());
+        response.setRegistrationDate(saved.getCreatedAt());
+        response.setConfirmationMessage("User registered successfully!");// Message à Changer
+
+        return response;
 
     }
 
-    private AuthResponse login(AuthRequest authRequest){
-        return  null;
+   public AuthResponse login(AuthRequest authRequest){
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authRequest.getEmail(),
+                        authRequest.getPassword()
+                )
+        ) ;
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // We generate the Token jwt
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        // generateJwtToken(auth)
+        return  new AuthResponse(jwt);
     }
 
 
