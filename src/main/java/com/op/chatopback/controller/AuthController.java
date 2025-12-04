@@ -3,6 +3,7 @@ package com.op.chatopback.controller;
 import com.op.chatopback.dto.*;
 import com.op.chatopback.model.User;
 import com.op.chatopback.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,13 +23,16 @@ public class AuthController {
     }
 
     // Methode for Connexion , will give the Jwt toker
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity <AuthResponse> login (@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
     // Give the current user by Using the AuthenticationPrincipal
     @GetMapping("/me")
-    public ResponseEntity<UserDto> me(@AuthenticationPrincipal User user) {
+    public ResponseEntity<?> me(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body("User Not Authentified");
+        }
         return ResponseEntity.ok(new UserDto(
                 user.getId(),
                 user.getName(),
