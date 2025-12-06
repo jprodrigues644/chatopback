@@ -36,13 +36,13 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String path = request.getServletPath();
 
-        // Ignore les endpoints publics
+
         if (path.equals("/api/auth/login") || path.equals("/api/auth/register")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Vérifie l'en-tête Authorization
+        //
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Missed or Invalid Token");
@@ -51,24 +51,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Extrait le token
         String jwt = authHeader.substring(7);
+
+        System.out.println("JWT : " + jwt);
         try {
             String email = jwtService.extractUsername(jwt);
-
-            // Charge l'utilisateur et vérifie le token
+            System.out.println("Email  : " + email);
+            //
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
+                System.out.println("Test ");
+                System.out.println(" Token Valide :  " +jwtService.isTokenValid(jwt, userDetails));
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     // Crée un objet Authentication
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     // Met à jour le SecurityContext
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);// Verifier
                 }
             }
         } catch (Exception e) {

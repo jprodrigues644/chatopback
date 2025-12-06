@@ -3,10 +3,12 @@ package com.op.chatopback.controller;
 import com.op.chatopback.dto.*;
 import com.op.chatopback.model.User;
 import com.op.chatopback.service.AuthService;
+import com.op.chatopback.util.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,16 +31,19 @@ public class AuthController {
     }
     // Give the current user by Using the AuthenticationPrincipal
     @GetMapping("/me")
-    public ResponseEntity<?> me(@AuthenticationPrincipal User user) {
-        if (user == null) {
+    public ResponseEntity<?> me(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        System.out.println(customUserDetails);
+        if (customUserDetails == null) {
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body("User Not Authentified");
         }
+        User user = customUserDetails.getUser();
         return ResponseEntity.ok(new UserDto(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getCreatedAt(),
-                user.getUpdatedAt()));
+                user.getUpdatedAt()
+        ));
     }
 
 }
