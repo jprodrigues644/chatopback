@@ -8,7 +8,7 @@ import lombok.Data;
 public class RentalRequest {
 
     private String name;
-    private Integer surface;
+    private Double surface;
     private Double price;
     private String picture;
     private String description;

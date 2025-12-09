@@ -2,12 +2,14 @@ package com.op.chatopback.util;
 
 
 import com.op.chatopback.model.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+
 
 public class CustomUserDetails implements UserDetails {
     private final User user;

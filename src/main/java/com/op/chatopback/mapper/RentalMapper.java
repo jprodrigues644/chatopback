@@ -3,6 +3,7 @@ package com.op.chatopback.mapper;
 import com.op.chatopback.dto.RentalRequest;
 import com.op.chatopback.dto.RentalResponse;
 import com.op.chatopback.model.Rental;
+import com.op.chatopback.model.User;
 
 public class RentalMapper {
 
@@ -10,8 +11,7 @@ public class RentalMapper {
     public static RentalResponse toResponse(Rental rental, String confirmationMessage) {
         return new RentalResponse(
                 rental.getId(),
-                rental.getDescription(),
-                rental.getSurface().intValue(),
+                rental.getSurface(),
                 rental.getPrice(),
                 rental.getPictureUrl(),
                 rental.getDescription(),
@@ -21,13 +21,14 @@ public class RentalMapper {
         );
     }
 
-    // Request DTO → Entity, Owner added in the service
-    public static Rental toEntity(RentalRequest request) {
+    // Request DTO → Entity,
+    public static Rental toEntity(RentalRequest request, User Owner) {
         Rental rental = new Rental();
-        rental.setDescription(request.getDescription());
-        rental.setSurface(request.getSurface().doubleValue());
+        rental.setSurface(request.getSurface());
         rental.setPrice(request.getPrice());
+        rental.setDescription(request.getDescription());
         rental.setPictureUrl(request.getPicture());
+        rental.setOwner(owner);
         return rental;
     }
 }

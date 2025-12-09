@@ -1,6 +1,7 @@
 package com.op.chatopback.controller;
 
 import com.op.chatopback.dto.*;
+import com.op.chatopback.mapper.UserMapper;
 import com.op.chatopback.model.User;
 import com.op.chatopback.service.AuthService;
 import com.op.chatopback.util.CustomUserDetails;
@@ -36,14 +37,8 @@ public class AuthController {
         if (customUserDetails == null) {
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body("User Not Authentified");
         }
-        User user = customUserDetails.getUser();
-        return ResponseEntity.ok(new UserDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        ));
+        UserDto userDto =   UserMapper.toDto(customUserDetails.getUser());
+        return ResponseEntity.ok( userDto);
     }
 
 }
