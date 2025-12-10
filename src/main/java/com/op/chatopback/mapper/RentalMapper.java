@@ -8,21 +8,22 @@ import com.op.chatopback.model.User;
 public class RentalMapper {
 
     // Entity → Response DTO
-    public static RentalResponse toResponse(Rental rental, String confirmationMessage) {
+    public static RentalResponse toResponse(Rental rental) {
         return new RentalResponse(
                 rental.getId(),
+                rental.getName(),
                 rental.getSurface(),
                 rental.getPrice(),
                 rental.getPictureUrl(),
                 rental.getDescription(),
                 rental.getOwner().getId(),
-                confirmationMessage,
+                null,
                 rental.getCreatedAt()
         );
     }
 
     // Request DTO → Entity,
-    public static Rental toEntity(RentalRequest request, User Owner) {
+    public static Rental toEntity(RentalRequest request, User owner) {
         Rental rental = new Rental();
         rental.setSurface(request.getSurface());
         rental.setPrice(request.getPrice());

@@ -45,7 +45,7 @@ public class Message {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 }
 
 

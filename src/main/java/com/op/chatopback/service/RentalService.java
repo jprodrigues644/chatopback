@@ -1,6 +1,5 @@
 package com.op.chatopback.service;
 
-import com.op.chatopback.dto.RegisterRequest;
 import com.op.chatopback.dto.RentalRequest;
 import com.op.chatopback.dto.RentalResponse;
 import com.op.chatopback.mapper.RentalMapper;
@@ -11,25 +10,49 @@ import com.op.chatopback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class RentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
 
-    public RentalResponse CreateRental(RentalRequest rentalRequest, Integer ownerId) {
+ // Read
+    public List <RentalResponse> getAllRentals() {
+        return rentalRepository.findAll().stream()
+                .map(RentalMapper::toResponse)
+                .toList();
+
+    }
+
+    public Optional<Rental> getRentalById(Integer rentalId){
+        return rentalRepository.findById(rentalId);
+    }
+
+    public  List<RentalResponse> getAllRentalsByUser(Integer ownerId) {
+
+        return rentalRepository.findAllByOwnerId(ownerId)
+                .stream()
+                .map(RentalMapper::toResponse)
+                .toList();
+    }
+
+    // Creations
+    public RentalResponse createRental(RentalRequest rentalRequest, Integer ownerId) {
 
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new RuntimeException("User with Id: " + ownerId + " not fond"));
         Rental rental = RentalMapper.toEntity(rentalRequest, owner);
         rentalRepository.save(rental);
-        return RentalMapper.toResponse(rental, "Rental Created");
+        return RentalMapper.toResponse(rental);
 
     }
 
-    //
-    // RentalResponse
 
-    public RentalResponse UpdateRental(RentalRequest request, Integer rentalId) {
+    // Update
+
+    public RentalResponse updateRental(RentalRequest request, Integer rentalId) {
 
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found with id: " + rentalId));
@@ -43,11 +66,14 @@ public class RentalService {
 
         rentalRepository.save(rental);
 
-        return RentalMapper.toResponse(rental, "Rental Updated");
+        return RentalMapper.toResponse(rental);
 
     }
+     // Delete
+    public void deleteRental(Integer rentalId) {
+        rentalRepository.deleteById(rentalId);
 
 
-    public Void DeleteRental()
+    }
 
 }

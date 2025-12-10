@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class RentalResponse {
     private  Integer id;
     private String name;
-    private Integer surface;
+    private Double surface;
     private Double price;
     private String picture;
     private String description;
