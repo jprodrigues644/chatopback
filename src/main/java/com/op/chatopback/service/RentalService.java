@@ -2,6 +2,7 @@ package com.op.chatopback.service;
 
 import com.op.chatopback.dto.RentalRequest;
 import com.op.chatopback.dto.RentalResponse;
+import com.op.chatopback.dto.RentalsResponse;
 import com.op.chatopback.mapper.RentalMapper;
 import com.op.chatopback.model.Rental;
 import com.op.chatopback.model.User;
@@ -20,12 +21,13 @@ public class RentalService {
     private final UserRepository userRepository;
 
  // Read
-    public List <RentalResponse> getAllRentals() {
-        return rentalRepository.findAll().stream()
-                .map(RentalMapper::toResponse)
-                .toList();
+ public RentalsResponse getAllRentals() {
+     List<RentalResponse> list = rentalRepository.findAll().stream()
+             .map(RentalMapper::toResponse)
+             .toList();
 
-    }
+     return new RentalsResponse(list);
+ }
 
     public Optional<Rental> getRentalById(Integer rentalId){
         return rentalRepository.findById(rentalId);

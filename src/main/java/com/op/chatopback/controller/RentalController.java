@@ -2,6 +2,7 @@ package com.op.chatopback.controller;
 
 import com.op.chatopback.dto.RentalRequest;
 import com.op.chatopback.dto.RentalResponse;
+import com.op.chatopback.dto.RentalsResponse;
 import com.op.chatopback.model.Rental;
 import com.op.chatopback.service.RentalService;
 import com.op.chatopback.util.CustomUserDetails;
@@ -18,8 +19,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RentalController {
     private final RentalService rentalService;
-    @GetMapping
-    public ResponseEntity<List<RentalResponse>> getAllRentals() {
+
+
+    @GetMapping()
+    public ResponseEntity<RentalsResponse> getAllRentals() {
         return ResponseEntity.ok(rentalService.getAllRentals());
     }
 

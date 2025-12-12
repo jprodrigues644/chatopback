@@ -17,14 +17,15 @@ public class RentalMapper {
                 rental.getPictureUrl(),
                 rental.getDescription(),
                 rental.getOwner().getId(),
-                null,
-                rental.getCreatedAt()
+                rental.getCreatedAt(),
+                rental.getUpdatedAt()
         );
     }
 
-    // Request DTO → Entity,
+    // Request DTO → Entity
     public static Rental toEntity(RentalRequest request, User owner) {
         Rental rental = new Rental();
+        rental.setName(request.getName());
         rental.setSurface(request.getSurface());
         rental.setPrice(request.getPrice());
         rental.setDescription(request.getDescription());
