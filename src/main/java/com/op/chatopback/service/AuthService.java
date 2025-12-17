@@ -25,31 +25,24 @@ public class AuthService {
 
 
     //User Sign UP
-    public RegisterResponse registerUser (RegisterRequest registerRequest) {
-         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
-             throw new RuntimeException("User Already Exist");
-         }
+    public AuthResponse registerUser(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new RuntimeException("User Already Exist");
+        }
 
-         User user = new User();
-         user.setEmail(registerRequest.getEmail());
-         user.setName(registerRequest.getName());
-         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        User user = new User();
+        user.setEmail(registerRequest.getEmail());
+        user.setName(registerRequest.getName());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
         User savedUser = userRepository.save(user);
 
-        user.setCreatedAt(LocalDateTime.now());
+        AuthRequest authRequest = new AuthRequest(
+                registerRequest.getEmail(),
+                registerRequest.getPassword()
+        );
 
-        User saved = userRepository.save(user);
-
-        RegisterResponse response = new RegisterResponse();
-        response.setId(saved.getId());
-        response.setName(saved.getName());
-        response.setEmail(saved.getEmail());
-        response.setRegistrationDate(saved.getCreatedAt());
-        response.setConfirmationMessage("User registered successfully!");// Message à Changer
-
-        return response;
-
+        return login(authRequest);
     }
 
    public AuthResponse login(AuthRequest authRequest){

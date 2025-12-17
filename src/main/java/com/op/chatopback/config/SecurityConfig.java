@@ -32,9 +32,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests( auth ->auth
-                        .requestMatchers("/api/auth/register" , "/api/auth/login", "/swagger-ui.html",
+                        .requestMatchers("/api/auth/register" ,
+                                "/api/auth/login",
+                                "/swagger-ui.html",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**").permitAll()
+                                "/v3/api-docs/**" ,
+                                "/uploads/**"
+                               )
+                        .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

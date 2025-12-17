@@ -18,7 +18,7 @@ public class MessageService {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
 
-    public MessageResponse createMessage( MessageRequest request, Integer authenticatedUserId) {
+    public MessageResponse sendMessage(MessageRequest request, Integer authenticatedUserId) {
 
         User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

@@ -1,12 +1,15 @@
 package com.op.chatopback.controller;
 
+import com.op.chatopback.dto.ApiMessageResponse;
 import com.op.chatopback.dto.RentalRequest;
 import com.op.chatopback.dto.RentalResponse;
 import com.op.chatopback.dto.RentalsResponse;
+import com.op.chatopback.mapper.RentalMapper;
 import com.op.chatopback.model.Rental;
 import com.op.chatopback.service.RentalService;
 import com.op.chatopback.util.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,27 +30,33 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Rental>> getRentalById(@PathVariable Integer id) {
-        return ResponseEntity.ok(rentalService.getRentalById(id));
+    public ResponseEntity<RentalResponse> getRentalById(@PathVariable Integer id) {
+        Rental rental = rentalService.getRentalById(id)
+                .orElseThrow(() -> new RuntimeException("Rental not found with id: " + id));
+
+        // Convertir Rental en RentalResponse
+        return ResponseEntity.ok(RentalMapper.toResponse(rental));
+
 
     }
 
-    @PostMapping
-    public ResponseEntity<RentalResponse> createRental(
-            @RequestBody RentalRequest request,
+
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<ApiMessageResponse> createRental(
+            @ModelAttribute RentalRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        return ResponseEntity.ok(
-                rentalService.createRental(request, customUserDetails.getId())
-        );
+        rentalService.createRental(request, customUserDetails.getId());
+        return ResponseEntity.ok(new ApiMessageResponse("Rental created !"));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<RentalResponse> updateRental(
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiMessageResponse> updateRental(
             @PathVariable Integer id,
-            @RequestBody RentalRequest request) {
-        return ResponseEntity.ok(
-                rentalService.updateRental(request,id));
+            @ModelAttribute RentalRequest request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        rentalService.updateRental(request, id, customUserDetails.getId());
+        return ResponseEntity.ok(new ApiMessageResponse("Rental updated !"));
     }
 
     @DeleteMapping("/{id}")

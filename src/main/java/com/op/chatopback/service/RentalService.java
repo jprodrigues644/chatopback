@@ -19,6 +19,7 @@ import java.util.Optional;
 public class RentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
 
  // Read
  public RentalsResponse getAllRentals() {
@@ -42,10 +43,14 @@ public class RentalService {
     }
 
     // Creations
-    public RentalResponse createRental(RentalRequest rentalRequest, Integer ownerId) {
+    public RentalResponse createRental(RentalRequest rentalRequest, Integer authenticatedUserId) {
 
-        User owner = userRepository.findById(ownerId).orElseThrow(() -> new RuntimeException("User with Id: " + ownerId + " not fond"));
-        Rental rental = RentalMapper.toEntity(rentalRequest, owner);
+        User owner = userRepository.findById(authenticatedUserId)
+                .orElseThrow(() -> new RuntimeException("User with Id: " + authenticatedUserId + " not fond"));
+
+        String imageUrl = fileStorageService.saveRentalImage(rentalRequest.getPicture());
+        Rental rental = RentalMapper.toEntity(rentalRequest, owner, imageUrl);
+
         rentalRepository.save(rental);
         return RentalMapper.toResponse(rental);
 
@@ -54,20 +59,28 @@ public class RentalService {
 
     // Update
 
-    public RentalResponse updateRental(RentalRequest request, Integer rentalId) {
+    public RentalResponse updateRental(RentalRequest request, Integer rentalId, Integer userId) {
 
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found with id: " + rentalId));
 
-        // Updating Only the soutable Editing entries
+        if (!rental.getOwner().getId().equals(userId)) {
+            throw new RuntimeException("You are not authorized to update this rental");
+        }
 
+        // Updating Only the soutable Editing entries
+        rental.setName(request.getName());
         rental.setSurface(request.getSurface());
         rental.setPrice(request.getPrice());
         rental.setDescription(request.getDescription());
-        rental.setPictureUrl(request.getPicture());
+
+
+        if (request.getPicture() != null && !request.getPicture().isEmpty()) {
+            String imageUrl = fileStorageService.saveRentalImage(request.getPicture());
+            rental.setPicture(imageUrl);
+        }
 
         rentalRepository.save(rental);
-
         return RentalMapper.toResponse(rental);
 
     }

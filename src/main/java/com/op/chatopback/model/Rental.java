@@ -22,7 +22,7 @@ public class Rental {
     private Double surface;
     private Double price;
     @Column(length = 255)
-    private String pictureUrl;
+    private String picture;
     @Column(length = 2000)
     private String description;
 

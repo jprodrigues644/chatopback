@@ -21,7 +21,7 @@ public class AuthController {
     //Methode for User Creation will give the full information about the User Created
     private final AuthService  authService;
     @PostMapping("/register")
-    public ResponseEntity <RegisterResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.registerUser(request));
     }
 

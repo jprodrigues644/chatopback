@@ -1,5 +1,6 @@
 package com.op.chatopback.controller;
 
+import com.op.chatopback.dto.ApiMessageResponse;
 import com.op.chatopback.dto.MessageRequest;
 import com.op.chatopback.dto.MessageResponse;
 import com.op.chatopback.service.MessageService;
@@ -19,8 +20,11 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<MessageResponse> sendMessage( @RequestBody MessageRequest request,
-                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(messageService.createMessage(request, customUserDetails.getId()));
+    public ResponseEntity<ApiMessageResponse> sendMessage(
+            @RequestBody MessageRequest request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        messageService.sendMessage(request, customUserDetails.getId());
+        return ResponseEntity.ok(new ApiMessageResponse("Message send with success"));
     }
 }

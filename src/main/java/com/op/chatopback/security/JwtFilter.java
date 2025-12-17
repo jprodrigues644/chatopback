@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
                 || path.startsWith("/swagger-resources")
-                || path.startsWith("/webjars")) {
+                || path.startsWith("/webjars") || path.startsWith("/uploads")) {
 
             filterChain.doFilter(request, response);
             return;
@@ -66,14 +66,19 @@ public class JwtFilter extends OncePerRequestFilter {
             //
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                System.out.println("Test ");
+                System.out.println("UserDetails: " + userDetails);
                 System.out.println(" Token Valide :  " +jwtService.isTokenValid(jwt, userDetails));
                 if (jwtService.isTokenValid(jwt, userDetails)) {
+                    System.out.println("Token is valid");
+
                     // Crée un objet Authentication
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     // Met à jour le SecurityContext
                     SecurityContextHolder.getContext().setAuthentication(authentication);// Verifier
+                }
+                else {
+                    System.out.println("Token is invalid");
                 }
             }
         } catch (Exception e) {
