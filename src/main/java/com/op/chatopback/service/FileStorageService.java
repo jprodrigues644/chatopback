@@ -11,7 +11,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
-
+/**
+ * Service for handling file storage operations.
+ * <p>
+ * This service provides functionality to save rental images to the file system
+ * and generate accessible URLs for the uploaded images.
+ * </p>
+ */
 @Service
 public class FileStorageService {
     private final String uploadDir;
@@ -20,7 +26,11 @@ public class FileStorageService {
     public FileStorageService(FileStorageConfig config) {
         this.uploadDir = config.getUploadDir();
     }
-
+    /** Saves a rental image to the file system.
+     *
+     * @param file the multipart file to save
+     * @return the URL of the saved image
+     */
     public String saveRentalImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return null;

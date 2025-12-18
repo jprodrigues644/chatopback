@@ -5,16 +5,12 @@ import com.op.chatopback.model.User;
 
 public class UserMapper {
 
-    public static UserDto toDto(User user) {
+        public static UserDto toDto(User user) {
 
-
-
-            return new UserDto(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getCreatedAt(),
-                    user.getUpdatedAt()
-            );
-    }
+                return new UserDto(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getCreatedAt(),
+                        user.getUpdatedAt() );}
 }

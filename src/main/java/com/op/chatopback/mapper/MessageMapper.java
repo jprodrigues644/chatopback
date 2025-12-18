@@ -6,9 +6,11 @@ import com.op.chatopback.model.Message;
 import com.op.chatopback.model.Rental;
 import com.op.chatopback.model.User;
 
+/**
+ * Mapper class for converting between Message entities and DTOs.
+ */
 public class MessageMapper {
 
-    // Request DTO → Entity
     public static Message toEntity(MessageRequest request, User user, Rental rental) {
         Message message = new Message();
         message.setMessage(request.getMessage());
@@ -17,7 +19,6 @@ public class MessageMapper {
         return message;
     }
 
-    // Entity → Response DTO
     public static MessageResponse toResponse(Message entity, String confirmationMessage) {
         return new MessageResponse(
                 entity.getId(),

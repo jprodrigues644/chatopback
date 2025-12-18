@@ -1,6 +1,4 @@
 package com.op.chatopback.service;
-
-
 import com.op.chatopback.dto.*;
 import com.op.chatopback.model.User;
 import com.op.chatopback.repository.UserRepository;
@@ -12,7 +10,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+/**
+ * Service class for handling authentication-related operations such as user registration and login.*
+ * <p>
+ * This service interacts with the UserRepository for user data management and uses
+ * JWT for token generation.
+ * </p>
+ */
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +26,12 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
-
-    //User Sign UP
+    /**
+     * Registers a new user.
+     *
+     * @param registerRequest the registration request containing user details
+     * @return the authentication response with user info and token
+     */
     public AuthResponse registerUser(RegisterRequest registerRequest) {
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
             throw new RuntimeException("User Already Exist");
@@ -34,9 +41,7 @@ public class AuthService {
         user.setEmail(registerRequest.getEmail());
         user.setName(registerRequest.getName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-
-        User savedUser = userRepository.save(user);
-
+        userRepository.save(user);
         AuthRequest authRequest = new AuthRequest(
                 registerRequest.getEmail(),
                 registerRequest.getPassword()
@@ -44,8 +49,13 @@ public class AuthService {
 
         return login(authRequest);
     }
-
-   public AuthResponse login(AuthRequest authRequest){
+    /**
+     * Authenticates a user and provides a JWT token.
+     *
+     * @param authRequest the authentication request containing login credentials
+     * @return the authentication response with user info and token
+     */
+    public AuthResponse login(AuthRequest authRequest){
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -53,16 +63,9 @@ public class AuthService {
                         authRequest.getPassword()
                 )
         ) ;
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // We generate the Token jwt
-        String jwt = jwtService.generateToken(authentication);
-        // generateJwtToken(auth)
+        String jwt = jwtService.generateToken(authentication); 
         return  new AuthResponse(jwt);
     }
-
-
-
 
 }

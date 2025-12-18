@@ -4,10 +4,11 @@ import com.op.chatopback.dto.RentalRequest;
 import com.op.chatopback.dto.RentalResponse;
 import com.op.chatopback.model.Rental;
 import com.op.chatopback.model.User;
-
+/**
+ * Mapper class for converting between Rental entities and DTOs.
+ */
 public class RentalMapper {
 
-    // Entity → Response DTO
     public static RentalResponse toResponse(Rental rental) {
         return new RentalResponse(
                 rental.getId(),
@@ -22,7 +23,6 @@ public class RentalMapper {
         );
     }
 
-    // Request DTO → Entity
     public static Rental toEntity(RentalRequest request, User owner, String imageUrl) {
         Rental rental = new Rental();
         rental.setName(request.getName());

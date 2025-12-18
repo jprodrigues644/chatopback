@@ -10,14 +10,24 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * JWT authentication filter for validating bearer tokens in incoming requests.
+ * <p>
+ * This filter intercepts HTTP requests to extract and validate JWT tokens from the
+ * Authorization header, then sets the security context if the token is valid.
+ * Extends {@link OncePerRequestFilter} to ensure single execution per request.
+ * </p>
+ * <p>
+ * The filter excludes public endpoints (authentication, Swagger documentation, static resources)
+ * from JWT validation and returns HTTP 403 for invalid or missing tokens.
+ * </p>
+ */
 @Component
-
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -27,12 +37,21 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
-
+    
+    /** Filters incoming HTTP requests to validate JWT tokens.
+     *
+     * @param request     the HTTP request
+     * @param response    the HTTP response
+     * @param filterChain the filter chain
+     * @throws ServletException in case of a servlet error
+     * @throws IOException      in case of an I/O error
+     */
     @Override
+
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String path = request.getServletPath();
 
@@ -49,40 +68,27 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        //
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Missed or Invalid Token");
             return;
         }
 
-        // Extrait le token
         String jwt = authHeader.substring(7);
 
-        System.out.println("JWT : " + jwt);
         try {
             String email = jwtService.extractUsername(jwt);
-            System.out.println("Email  : " + email);
-            //
+
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                System.out.println("UserDetails: " + userDetails);
-                System.out.println(" Token Valide :  " +jwtService.isTokenValid(jwt, userDetails));
-                if (jwtService.isTokenValid(jwt, userDetails)) {
-                    System.out.println("Token is valid");
 
-                    // Crée un objet Authentication
+                if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    // Met à jour le SecurityContext
-                    SecurityContextHolder.getContext().setAuthentication(authentication);// Verifier
-                }
-                else {
-                    System.out.println("Token is invalid");
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
         } catch (Exception e) {
-            logger.error("Erreur lors de la validation du token JWT : " + e.getMessage());
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid Token");
             return;
         }
@@ -90,4 +96,3 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-

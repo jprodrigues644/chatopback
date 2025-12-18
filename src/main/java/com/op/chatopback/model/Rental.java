@@ -37,8 +37,4 @@ public class Rental {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-
-
- 
-
 }

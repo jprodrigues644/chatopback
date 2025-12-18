@@ -1,5 +1,4 @@
 package com.op.chatopback.service;
-
 import com.op.chatopback.dto.RentalRequest;
 import com.op.chatopback.dto.RentalResponse;
 import com.op.chatopback.dto.RentalsResponse;
@@ -13,7 +12,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * Service for handling rental operations.
+ * <p>
+ * This service provides functionality to create, retrieve, update, and delete rentals.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 public class RentalService {
@@ -21,7 +25,9 @@ public class RentalService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
 
- // Read
+/** Retrieves all rentals.
+ * @return a RentalsResponse containing the list of rentals
+ */
  public RentalsResponse getAllRentals() {
      List<RentalResponse> list = rentalRepository.findAll().stream()
              .map(RentalMapper::toResponse)
@@ -42,7 +48,7 @@ public class RentalService {
                 .toList();
     }
 
-    // Creations
+
     public RentalResponse createRental(RentalRequest rentalRequest, Integer authenticatedUserId) {
 
         User owner = userRepository.findById(authenticatedUserId)
@@ -57,8 +63,6 @@ public class RentalService {
     }
 
 
-    // Update
-
     public RentalResponse updateRental(RentalRequest request, Integer rentalId, Integer userId) {
 
         Rental rental = rentalRepository.findById(rentalId)
@@ -68,7 +72,6 @@ public class RentalService {
             throw new RuntimeException("You are not authorized to update this rental");
         }
 
-        // Updating Only the soutable Editing entries
         rental.setName(request.getName());
         rental.setSurface(request.getSurface());
         rental.setPrice(request.getPrice());
@@ -84,7 +87,8 @@ public class RentalService {
         return RentalMapper.toResponse(rental);
 
     }
-     // Delete
+
+    
     public void deleteRental(Integer rentalId) {
         rentalRepository.deleteById(rentalId);
 

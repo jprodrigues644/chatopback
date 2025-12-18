@@ -4,6 +4,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Web configuration for handling static resources.
+ * <p>
+ * Configures resource handlers for serving uploaded files.
+ * </p>
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

@@ -8,6 +8,12 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Swagger configuration for API documentation.
+ * <p>
+ * Sets up OpenAPI with security schemes and API metadata.
+ * </p>
+ */
 @Configuration
 public class SwaggerConfig {
 
@@ -15,14 +21,12 @@ public class SwaggerConfig {
     public OpenAPI chatopOpenAPI() {
 
         return new OpenAPI()
-                // API General Info
+                
                 .info(new Info()
                         .title("Chatop API")
                         .description("API de gestion des locations (rentals)")
                         .version("1.0.0")
-                )
-
-                //  JWT (Bearer) token
+                )              
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth",
@@ -31,6 +35,5 @@ public class SwaggerConfig {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
                         )
-                );
-    }
+                ); }
 }

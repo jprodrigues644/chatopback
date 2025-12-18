@@ -1,34 +1,40 @@
 package com.op.chatopback.service;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.Key;
-import java.security.KeyRep;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Date;
 
-
-
+/**
+ * Service for handling JWT (JSON Web Token) operations.
+ * <p>
+ * This service provides functionality to generate, validate, and extract information from JWT tokens.
+ * </p>
+ */
 @Service
 @Getter
 @Setter
 public class JwtService {
 
-    private String secretKey="c2VjcmV0S2V5Zm9ySmF3VFRva2VuZ2VuZXJhdGlvblNlY3JldEtleQ==";
+    @Value("${app.jwt.secret}")
+    private String secretKey;
 
+    @Value("${app.jwt.expiration}")
+    private long jwtExpiration;
 
+    /** Generates a JWT token for the given authentication.
+     *
+     * @param authentication the authentication object containing user details
+     * @return the generated JWT token
+     */
     public String generateToken(Authentication authentication){
         UserDetails user =  (UserDetails) authentication.getPrincipal();
         return Jwts.builder()
@@ -38,16 +44,21 @@ public class JwtService {
                 .signWith(getKey())
                 .compact();
     }
-
+    /** Retrieves the signing key for JWT operations.
+     *
+     * @return the signing key
+     */
     public Key getKey() {
         byte[] KeyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(KeyBytes);
 
     }
 
-
-
-
+    /** Extracts the username from a JWT token.
+     *
+     * @param jwt the JWT token
+     * @return the username extracted from the token
+     */
     public String extractUsername(String jwt) {
         return Jwts.parser()
                 .verifyWith((SecretKey) getKey())
@@ -56,15 +67,23 @@ public class JwtService {
                 .getPayload()
                 .getSubject();
     }
-
-
-
+    /** Validates a JWT token against user details.
+     *
+     * @param jwt         the JWT token
+     * @param userDetails the user details to validate against
+     * @return true if the token is valid, false otherwise
+     */
 
     public boolean isTokenValid(String jwt, UserDetails userDetails) {
         final String username = extractUsername(jwt);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(jwt));
     }
 
+    /** Checks if a JWT token is expired.
+     *
+     * @param jwt the JWT token
+     * @return true if the token is expired, false otherwise
+     */
     private boolean isTokenExpired(String jwt) {
         return Jwts.parser()
                 .verifyWith((SecretKey) getKey())

@@ -1,7 +1,5 @@
 package com.op.chatopback.service;
-
 import com.op.chatopback.dto.MessageRequest;
-import com.op.chatopback.dto.MessageResponse;
 import com.op.chatopback.model.Message;
 import com.op.chatopback.model.Rental;
 import com.op.chatopback.model.User;
@@ -11,14 +9,25 @@ import com.op.chatopback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for handling message operations.
+ * <p>
+ * This service provides functionality to send messages related to rentals.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
-
-    public MessageResponse sendMessage(MessageRequest request, Integer authenticatedUserId) {
+    
+    /** Sends a message on behalf of an authenticated user.
+     *
+     * @param request                the message request containing message details
+     * @param authenticatedUserId    the ID of the authenticated user sending the message
+     */
+    public void sendMessage(MessageRequest request, Integer authenticatedUserId) {
 
         User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -33,14 +42,7 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        return new MessageResponse(
-                message.getId(),
-                user.getId(),
-                rental.getId(),
-                message.getMessage(),
-                "Message sent with Success",
-                message.getCreatedAt()
-        );
+
     }
 }
 

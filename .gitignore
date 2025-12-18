@@ -33,3 +33,8 @@ build/
 .vscode/
 
 .fake
+
+
+.env
+.env.local
+.env.*.local
